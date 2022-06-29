@@ -5,22 +5,33 @@
 
 #define BUILT_IN_LED 13
 
-void blink_light()
+void blink_light(void *pvParameters)
 {
-    
-}
-void app_main(void) {
-    int i = 0;
     gpio_pad_select_gpio(BUILT_IN_LED);
     gpio_set_direction(BUILT_IN_LED, GPIO_MODE_OUTPUT);
 
-    while(1){
-        printf("[%d] Hello World! \n", i);
+    uint8_t param = *(uint8_t*) pvParameters;
+
+    while(1)
+    {
         gpio_set_level(BUILT_IN_LED, 1);
-        i++;
-        vTaskDelay(5000 / portTICK_PERIOD_MS);
+        vTaskDelay(50 / portTICK_PERIOD_MS);
         gpio_set_level(BUILT_IN_LED, 0);
-        printf("[%d] Hello World! \n", i);
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
+
+        printf("[%u]", param);
+    }
+}
+void app_main(void) {
+    int i = 0;
+
+    uint8_t parameterPastTest = 5;
+
+    xTaskCreate(&blink_light, "LEDBLINK", 512, &parameterPastTest, 5 , NULL);
+
+    while(1){
+        printf("[%d] Hello World! \n", 1);
+        i++;
         vTaskDelay(500);
     }
 
